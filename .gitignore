@@ -1,0 +1,17 @@
+# byte_compiled / cache file
+__pycache__/
+*.py[cod]
+*.so
+
+#virtual env
+venv/
+env/
+
+# jupyter notebook chckpoints
+.ipynb_checkpoints/
+
+#pytorch model files
+*.pth
+
+# VS code settings 
+.vscode/
