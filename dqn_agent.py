@@ -10,9 +10,9 @@ import torch.optim as optim
 class QNetwork(nn.Module):
     def __init__(self, state_size, action_size, hidden_size=64):
         super(QNetwork, self).__init__()
-        self.fc1 = nn.linear(state_size, hidden_size) #first hidden layer
-        self.relu =nn.RelU()
-        self.fc2 =nn.linear(state_size, hidden_size) #outpit layer Q values 
+        self.fc1 = nn.Linear(state_size, hidden_size) # first hidden layer
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_size, action_size) # output layer Q values 
         
     def forward(self, x):
         x = self.fc1(x)
@@ -52,23 +52,23 @@ class DQNAgent:
         self.target_network = QNetwork(state_size, action_size).to(device)
         self.target_network.load_state_dict(self.qnetwork.state_dict())  #says weights of target network to q network
         
-        self . optimizer = optim.Adam(self.q_network.parameters(), lr=lr)
+        self.optimizer = optim.Adam(self.qnetwork.parameters(), lr=lr)
         
         #Experience replay
         self.replay_buffer = ReplayBuffer(buffer_capacity)
-        self,batch_size = batch_size
+        self.batch_size = batch_size
 
         #other hyperparameters
         self.gamma = gamma
         self.target_update_freq = target_update_freq
-        self,steps = 0 # track steps for updateing networks 
+        self.steps = 0 # track steps for updateing networks 
         
     def select_action(self, state, epsilon,):
         if random.random() < epsilon:
-            return random,random(0, self.action_size - 1) # explore :randomaction
+            return random.randint(0, self.action_size - 1) # explore: random action
         state =torch.tensor(state, dtype=torch.float32).unsqueeze(0).to (self.device)
         with torch.no_grad():
-            q_values = self.q_networks(state)
+            q_values = self.qnetwork(state)
         return q_values.argmax().item() # exploit : best known action
     
     def store(self, state, action, reward, next_state, done):
@@ -87,24 +87,24 @@ class DQNAgent:
         rewards = reward.to(self.device)
         next_states = next_state.to(self.device)
         dones = done.to(self.device)
-        # get current q values 
-        q_values = self.q_network(states).gather(1, actions.unsqueeze(1)).squeeze(1)
-        
-        #get target q values from target network 
-        with torch .no_grad():
-            next_q_values = self.target_network(next_state).max(1)[0]
-            targets = rewards + self.gamma * next_q_values * (1- dones)
-            
-            #compute loss
-            loss =nn.funcational.mse_loss(q_values, targets)
-            
-            #backpopagration
-            self.optimizer.zero_grad(0)
-            loss.backword()
-            self.optimizer.step()
-            
-            #update target network periodically
-            self.step += 1 
-            if self.steps % self.target_update_freq == 0:
-                self.target_network.load_state_dict(self.qnetwork.state_dict())
-                
+
+        # Compute q_values and next_q_values
+        q_values = self.qnetwork(states).gather(1, actions.unsqueeze(1)).squeeze(1)
+        with torch.no_grad():
+            next_q_values = self.target_network(next_states).max(1)[0]
+
+        # Compute targets
+        targets = rewards + self.gamma * next_q_values * (1 - dones)
+
+        # Compute loss
+        loss = nn.functional.mse_loss(q_values, targets)
+
+        # Backpropagation
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+
+        # Update target network periodically
+        self.steps += 1
+        if self.steps % self.target_update_freq == 0:
+            self.target_network.load_state_dict(self.qnetwork.state_dict())
