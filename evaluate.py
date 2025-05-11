@@ -18,7 +18,7 @@ agent.qnetwork.load_state_dict(torch.load(SAVE_PATH))
 agent.qnetwork.eval()
 
 # Evaluate the model
-eval_episodes = 100  # Limit to 5 episodes
+eval_episodes = 500  # Limit to 5 episodes
 total_rewards = []
 frames = []
 
@@ -27,9 +27,10 @@ for episode in range(eval_episodes):
     total_reward = 0
 
     while True:
-        # Render the environment and save frames for GIF
-        frame = env.render()
-        frames.append(frame)
+        # Render the environment and save every 5th frame for the GIF
+        if len(frames) % 5 == 0:
+            frame = env.render()
+            frames.append(frame)
 
         # Select action using the trained model
         action = agent.select_action(state, epsilon=0.0)  # Greedy policy
@@ -45,9 +46,9 @@ for episode in range(eval_episodes):
     total_rewards.append(total_reward)
     print(f"Evaluation Episode {episode + 1}, Total Reward: {total_reward}")
 
-# Save the GIF
+# Save the GIF with adjusted FPS
 gif_path = "C:/Users/it/cartpole-dqn/training.gif"
-imageio.mimsave(gif_path, frames[:5], fps=30)  # Save only the first 5 episodes' frames
+imageio.mimsave(gif_path, frames, fps=20)  # Adjust FPS for smoother playback
 print(f"Training visualization saved as GIF at {gif_path}")
 
 # Plot the rewards
