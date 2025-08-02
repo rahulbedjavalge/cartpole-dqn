@@ -2,6 +2,8 @@
 
 This project implements a Deep Q-Network (DQN) agent to solve the CartPole environment from OpenAI Gym. The goal is to balance a pole on a moving cart by applying reinforcement learning techniques.
 
+<img src="training.gif" width="600" height="400" alt="CartPole training demo">
+
 ## Features
 
 - Implementation of a DQN agent using PyTorch.
