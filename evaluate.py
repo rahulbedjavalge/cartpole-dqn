@@ -1,6 +1,5 @@
 import gym
 import torch
-import numpy as np
 from dqn_agent import DQNAgent
 import matplotlib.pyplot as plt
 import imageio
@@ -18,7 +17,7 @@ agent.qnetwork.load_state_dict(torch.load(SAVE_PATH))
 agent.qnetwork.eval()
 
 # Evaluate the model
-eval_episodes = 500  # Limit to 5 episodes
+eval_episodes = 5  # Number of evaluation episodes
 total_rewards = []
 frames = []
 

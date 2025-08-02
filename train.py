@@ -1,10 +1,9 @@
 import gym
-import torch 
-import numpy as np 
+import torch
+import numpy as np
 from dqn_agent import DQNAgent
 import matplotlib.pyplot as plt
-import IPython.display as clear_output
-import os 
+import os
 
 # Add the following code to stop GPU usage
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
@@ -17,20 +16,17 @@ EPS_END = 0.01
 EPS_DECAY = 0.995
 SAVE_PATH = 'C:/Users/it/cartpole-dqn/dqn_cartpole.pth'
 
-#set device
+# Set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# create envirnment 
-env =gym.make("CartPole-v1")
+# Create environment
+env = gym.make("CartPole-v1")
 state_size = env.observation_space.shape[0]  # should be 4
-action_size = env.action_space.n # should be 2
+action_size = env.action_space.n  # should be 2
 
-# create agent 
+# Create agent
 agent = DQNAgent(state_size, action_size, device)
 epsilon = EPS_START
-
-# Add imports for plotting
-import matplotlib.pyplot as plt
 
 # Function to plot training rewards
 def plot_rewards(rewards):
